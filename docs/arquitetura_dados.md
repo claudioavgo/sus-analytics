@@ -28,6 +28,7 @@ data/bronze/
     POPTBR21.dbf                        # Populacao 2021
     POPTBR22.dbf                        # Populacao 2022 (duplicado)
     POPTBR22/*.dbf                      # Populacao 2022 por UF
+    POPTBR23/*.dbf                      # Populacao 2022 por UF
     pib_municipios/
       PIB dos Municipios - base de dados 2010-2023.xlsx
     docs/*.pdf                          # Documentacao IBGE
@@ -77,4 +78,3 @@ Tabelas analiticas prontas para responder a pergunta de pesquisa:
 | Codigo municipio | Todas | DATASUS usa 6 digitos, IBGE PIB usa 7 digitos |
 | Campos zerados | SIH/SUS | ~19 campos legados sem conteudo |
 | VAB incompleto | PIB 2022-2023 | Desagregacao setorial indisponivel |
-| Populacao 2023 | Populacao | Nao disponivel nos arquivos atuais |

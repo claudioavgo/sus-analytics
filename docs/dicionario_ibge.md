@@ -6,7 +6,7 @@
 
 - **Fonte:** IBGE / DATASUS (Estimativas populacionais)
 - **Tipo de arquivo:** `.dbf` (dBASE)
-- **Cobertura:** 2020, 2021, 2022
+- **Cobertura:** 2020, 2021, 2022, 2023
 - **Granularidade:** Municipio
 - **Total de municipios:** 5.570 por ano
 
@@ -18,6 +18,7 @@
 | `POPTBR21.dbf` | 2021 | 5.570 | OK |
 | `POPTBR22.dbf` | 2022 | 11.140 | Registros duplicados -- requer deduplicacao |
 | `POPTBR22/*.dbf` | 2022 | Varia | Arquivos por UF, mesmo schema |
+| `POPTBR23/*.dbf` | 2023 | Varia | Arquivos por UF, mesmo schema |
 
 ### Schema (3 campos)
 
@@ -144,8 +145,6 @@ pib["cod_municipio_6d"] = pib["Codigo do Municipio"] // 10
 | Base | Periodo disponivel |
 |------|--------------------|
 | SIH/SUS | 2020-2023 |
-| Populacao | 2020-2022 |
+| Populacao | 2020-2023 |
 | PIB Municipal | 2010-2023 |
-| **Intersecao completa** | **2020-2022** |
-
-Para 2023 ha dados de internacao e PIB, mas nao de populacao (taxa por habitante so ate 2022).
+| **Intersecao completa** | **2020-2023** |
