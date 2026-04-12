@@ -1,39 +1,98 @@
-# SUS Analytics
-
-Analise da distribuicao de internacoes hospitalares no Brasil pelo SUS, investigando variacoes regionais, tendencias temporais e a associacao com fatores socioeconomicos como populacao e renda.
+# SUS Analytics — Impacto do COVID-19 nas Internações Hospitalares (SP, 2020-2023)
 
 ## Pergunta de pesquisa
 
-Como as internacoes hospitalares no Brasil se distribuem entre regioes e ao longo do tempo, e em que medida fatores socioeconomicos estao associados a maiores taxas de hospitalizacao no SUS?
+Como as ondas do COVID-19 impactaram o volume de internações e a mortalidade hospitalar no SUS-SP entre 2020 e 2023?
 
-## Fontes de dados
+Sub-perguntas:
 
-| Fonte | Descricao | Formato |
-|-------|-----------|---------|
-| SIH/SUS (DATASUS) | Registros de internacoes hospitalares (AIH Reduzida) | `.dbc` |
-| IBGE | Estimativas populacionais por municipio | `.dbf` |
-| IBGE | PIB dos Municipios (proxy de renda) | `.xlsx` |
+- Como evoluiu mês a mês o volume de internações por COVID (CID B342) em SP?
+- A taxa de óbitos hospitalares aumentou durante os picos de COVID?
+- Houve diferença no perfil da internação (dias de permanência, uso de UTI) entre as ondas?
+- Quais grupos demográficos (sexo, faixa etária) foram mais impactados?
 
-Os dados brutos estao organizados em `data/bronze/`, seguindo uma arquitetura medalhao (bronze/silver/gold).
+## Contexto
+
+O COVID-19 gerou uma das maiores pressões sobre o sistema hospitalar brasileiro da história recente.
+São Paulo, como o estado mais populoso e com maior rede hospitalar do SUS, representa um
+laboratório ideal para entender como o sistema respondeu às ondas da pandemia entre 2020 e 2023.
+
+## Fonte de dados
+
+| Fonte             | Descrição                                            | Formato | Cobertura               |
+| ----------------- | ---------------------------------------------------- | ------- | ----------------------- |
+| SIH/SUS (DATASUS) | Autorizações de Internação Hospitalar - AIH Reduzida | `.dbc`  | SP, Jan/2020 a Dez/2023 |
+
+Os dados brutos estão organizados em `data/bronze/`, seguindo arquitetura medalhão (bronze/silver/gold).
 
 ## Estrutura do projeto
 
-```
+```text
 data/
   bronze/
-    sihsus/             # AIH Reduzida por UF - todas as 27 UFs, 2020-2023
-    ibge/               # Populacao residente por municipio - 2020 a 2022
-      pib_municipios/   # PIB municipal - 2010 a 2023
-scripts/
-  download_sihsus.ps1   # Script de download automatizado dos dados SIHSUS
+    sihsus/
+      SP/          # 48 arquivos .dbc — Jan/2020 a Dez/2023
+      docs/        # Layout oficial DATASUS (IT_SIHSUS)
+  silver/          # Dados limpos e tipados (gerado pelo pipeline)
+src/
+  ingest.py        # Leitura de .dbc para DataFrame (bronze -> silver)
+  transform.py     # Funções de transformação demonstradas no notebook
+notebooks/
+  01_exploracao_sihsus.ipynb   # Demonstração técnica da ingestão e transformação
+docs/
+  arquitetura_dados.md         # Arquitetura do pipeline de dados
+  checklist_av1.md             # Checklist de status da AV1
+  dicionario_sihsus.md         # Dicionário de dados SIH/SUS
+  team_roles.md                # Divisão de tarefas da equipe
+  PROJETO_FUND_BIG_DATA.pdf    # Especificação da disciplina
+requirements.txt
 ```
 
-## Cobertura
+## Pipeline de dados
 
-- **Periodo:** 2020-2023 (todos os meses)
-- **Estados:** Todas as 27 UFs
-- **Dados socioeconomicos:** PIB municipal 2010-2023, populacao 2020-2022
+```text
+[DATASUS]
+    |
+    v
+[Bronze] data/bronze/sihsus/SP/*.dbc
+    | src/ingest.py
+    | - descomprime .dbc -> .dbf
+    | - seleciona 17 campos relevantes
+    | - exporta Parquet consolidado
+    v
+[Silver] data/silver/sihsus_sp.parquet
+    | src/transform.py (funções demonstradas no notebook)
+    | - tipagem correta (datas, numéricos, categóricos)
+    | - filtragem: período 2020-2023
+    | - flag COVID: DIAG_PRINC == B342 (CID usado pelo DATASUS)
+    | - colunas derivadas: ano, mês, ano_mes, faixa_etaria
+    v
+[Notebook] notebooks/01_exploracao_sihsus.ipynb
+```
 
-## Licenca
+## Tecnologias utilizadas
 
-Dados publicos disponibilizados pelo DATASUS e IBGE.
+| Camada               | Tecnologia                     |
+| -------------------- | ------------------------------ |
+| Leitura .dbc         | `datasus-dbc`, `dbfread`       |
+| Processamento        | `pandas`, `pyarrow`            |
+| Armazenamento        | Parquet (via `pyarrow`)        |
+| Demonstração técnica | Jupyter Notebook, `matplotlib` |
+| Versionamento        | Git / GitHub                   |
+
+## Como executar
+
+```bash
+# 1. Instalar dependências
+pip install -r requirements.txt
+
+# 2. Executar ingestão (bronze -> silver)
+python src/ingest.py
+
+# 3. Abrir notebook de demonstração técnica
+jupyter notebook notebooks/01_exploracao_sihsus.ipynb
+```
+
+## Licença
+
+Dados públicos disponibilizados pelo DATASUS/Ministério da Saúde.
