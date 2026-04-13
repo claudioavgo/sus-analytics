@@ -1,3 +1,5 @@
+data/bronze/*.parquet
+data/silver/*.parquet
 data/gold/
 
 # Cache Python
