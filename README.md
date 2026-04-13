@@ -33,16 +33,20 @@ data/
     sihsus/
       SP/          # 48 arquivos .dbc — Jan/2020 a Dez/2023
       docs/        # Layout oficial DATASUS (IT_SIHSUS)
-  silver/          # Dados limpos e tipados (gerado pelo pipeline)
+    sihsus_sp_raw.parquet   # Parquet bruto consolidado (gerado pelo pipeline)
+  silver/
+    sihsus_sp.parquet       # Dados limpos, tipados e enriquecidos (gerado pelo pipeline)
 src/
-  ingest.py        # Leitura de .dbc para DataFrame (bronze -> silver)
-  transform.py     # Funções de transformação demonstradas no notebook
+  ingest_bronze.py          # .dbc -> Parquet bruto (camada bronze)
+  transform_silver.py       # Bronze raw -> Silver limpa, tipada e enriquecida
 notebooks/
-  01_exploracao_sihsus.ipynb   # Demonstração técnica da ingestão e transformação
+  01_exploracao_sihsus.ipynb      # Demonstração técnica da ingestão e transformação
+  02_silver_visualizacoes.ipynb   # Visualizações exploratórias das variáveis da silver
 docs/
-  arquitetura_dados.md         # Arquitetura do pipeline de dados
-  team_roles.md                # Divisão de tarefas da equipe
-  PROJETO_FUND_BIG_DATA.pdf    # Especificação da disciplina
+  arquitetura_dados.md      # Arquitetura do pipeline de dados
+  checklist_av1.md          # Checklist de status das etapas da AV1
+  team_roles.md             # Divisão de tarefas da equipe
+  PROJETO_FUND_BIG_DATA.pdf # Especificação da disciplina
 requirements.txt
 ```
 
@@ -53,30 +57,35 @@ requirements.txt
     |
     v
 [Bronze] data/bronze/sihsus/SP/*.dbc
-    | src/ingest.py
-    | - descomprime .dbc -> .dbf
+    | src/ingest_bronze.py
+    | - descomprime .dbc -> DataFrame
+    | - consolida 48 arquivos em 1 Parquet bruto (113 campos)
+    v
+[Bronze consolidado] data/bronze/sihsus_sp_raw.parquet
+    | src/transform_silver.py
     | - seleciona 17 campos relevantes
-    | - exporta Parquet consolidado
+    | - tipagem (datas, numéricos, categóricos)
+    | - filtra período 2020-2023 e datas inválidas
+    | - enriquece linha-a-linha: is_covid, ano, mes, ano_mes, faixa_etaria
     v
 [Silver] data/silver/sihsus_sp.parquet
-    | src/transform.py (funções demonstradas no notebook)
-    | - tipagem correta (datas, numéricos, categóricos)
-    | - filtragem: período 2020-2023
-    | - flag COVID: DIAG_PRINC == B342 (CID usado pelo DATASUS)
-    | - colunas derivadas: ano, mês, ano_mes, faixa_etaria
+    |
     v
-[Notebook] notebooks/01_exploracao_sihsus.ipynb
+[Notebooks] 01_exploracao_sihsus.ipynb  (demonstração técnica)
+            02_silver_visualizacoes.ipynb (visualizações das variáveis)
 ```
+
+> A camada Gold (agregações e tabelas analíticas consolidadas) é escopo da AV2.
 
 ## Tecnologias utilizadas
 
-| Camada               | Tecnologia                     |
-| -------------------- | ------------------------------ |
-| Leitura .dbc         | `datasus-dbc`, `dbfread`       |
-| Processamento        | `pandas`, `pyarrow`            |
-| Armazenamento        | Parquet (via `pyarrow`)        |
-| Demonstração técnica | Jupyter Notebook, `matplotlib` |
-| Versionamento        | Git / GitHub                   |
+| Camada               | Tecnologia                                |
+| -------------------- | ----------------------------------------- |
+| Leitura .dbc         | `datasus-dbc`, `dbfread`                  |
+| Processamento        | `pandas`, `pyarrow`                       |
+| Armazenamento        | Parquet (via `pyarrow`)                   |
+| Visualização         | Jupyter Notebook, `matplotlib`, `seaborn` |
+| Versionamento        | Git / GitHub                              |
 
 ## Como executar
 
@@ -84,11 +93,15 @@ requirements.txt
 # 1. Instalar dependências
 pip install -r requirements.txt
 
-# 2. Executar ingestão (bronze -> silver)
-python src/ingest.py
+# 2. Executar ingestão bruta (bronze)
+python src/ingest_bronze.py
 
-# 3. Abrir notebook de demonstração técnica
+# 3. Executar transformação (bronze -> silver)
+python src/transform_silver.py
+
+# 4. Abrir notebooks
 jupyter notebook notebooks/01_exploracao_sihsus.ipynb
+jupyter notebook notebooks/02_silver_visualizacoes.ipynb
 ```
 
 ## Licença
