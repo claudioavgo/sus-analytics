@@ -41,8 +41,6 @@ notebooks/
   01_exploracao_sihsus.ipynb   # Demonstração técnica da ingestão e transformação
 docs/
   arquitetura_dados.md         # Arquitetura do pipeline de dados
-  checklist_av1.md             # Checklist de status da AV1
-  dicionario_sihsus.md         # Dicionário de dados SIH/SUS
   team_roles.md                # Divisão de tarefas da equipe
   PROJETO_FUND_BIG_DATA.pdf    # Especificação da disciplina
 requirements.txt

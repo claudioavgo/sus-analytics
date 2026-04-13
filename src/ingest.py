@@ -169,10 +169,5 @@ def ingest(bronze_dir: Path = BRONZE_DIR, output: Path = OUTPUT_FILE) -> None:
     pq.write_table(table, output, compression="snappy")
     log.info("Silver salvo em: %s (%.1f MB)", output, output.stat().st_size / 1e6)
 
-
-# ---------------------------------------------------------------------------
-# Entry point
-# ---------------------------------------------------------------------------
-
 if __name__ == "__main__":
     ingest()
