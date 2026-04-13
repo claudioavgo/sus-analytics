@@ -99,7 +99,7 @@ def clean_dtypes(df: pd.DataFrame) -> pd.DataFrame:
                 "COD_IDADE", "CNES"]
     for col in str_cols:
         df[col] = df[col].astype(str).str.strip().str.upper()
-        df[col] = df[col].replace({"NAN": None, "NONE": None, "": None})
+        df[col] = df[col].mask(df[col].isin(["NAN", "NONE", ""]))
 
     return df
 
