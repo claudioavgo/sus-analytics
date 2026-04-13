@@ -1,9 +1,9 @@
 """
-ingest_bronze.py — Camada Bronze
+ingest_bronze.py: camada bronze do pipeline SUS Analytics.
 
-Lê os arquivos .dbc do SIH/SUS (SP, 2020-2023) e consolida em um único Parquet
-bruto, preservando **todos** os campos originais e sem qualquer transformação
-de tipos ou filtros. Este é o ponto de entrada da arquitetura medalhão.
+Lê os arquivos .dbc do SIH/SUS (SP, 2020 a 2023) e reúne todos eles em um
+único Parquet bruto. Preserva os 113 campos originais e não aplica tipagem,
+filtro ou seleção. Este é o primeiro passo da arquitetura medalhão.
 
 Uso:
     python src/ingest_bronze.py
@@ -41,7 +41,7 @@ def list_dbc_files(directory: Path) -> list[Path]:
 
 
 def read_dbc_raw(dbc_path: Path) -> pd.DataFrame:
-    """Descomprime um .dbc e carrega TODOS os campos como DataFrame (sem tipagem)."""
+    """Descomprime um .dbc e devolve todos os campos em um DataFrame, sem tipagem."""
     with tempfile.NamedTemporaryFile(suffix=".dbf", delete=False) as tmp:
         tmp_path = tmp.name
 
@@ -59,7 +59,7 @@ def ingest_bronze(
     source_dir: Path = BRONZE_SOURCE_DIR,
     output: Path = BRONZE_OUTPUT,
 ) -> None:
-    """Consolida todos os .dbc em um único Parquet bruto na camada bronze."""
+    """Junta todos os .dbc em um único Parquet bruto na camada bronze."""
     output.parent.mkdir(parents=True, exist_ok=True)
 
     dbc_files = list_dbc_files(source_dir)

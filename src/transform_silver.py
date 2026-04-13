@@ -1,9 +1,9 @@
 """
-transform_silver.py — Camada Bronze -> Silver
+transform_silver.py: camada bronze para silver no pipeline SUS Analytics.
 
-Lê o Parquet bruto da camada bronze, seleciona os campos relevantes para
-a pesquisa, aplica tipagem, filtros de qualidade e enriquecimento linha-a-linha
-(sem agregação), e salva o Parquet consolidado da camada silver.
+Lê o Parquet bruto gerado pela bronze, seleciona os campos relevantes para
+a pesquisa, aplica tipagem e filtros de qualidade, adiciona colunas derivadas
+linha a linha (sem agregação) e salva o Parquet da silver.
 
 Pergunta de pesquisa:
     "Como as ondas do COVID-19 impactaram o volume de internações
@@ -12,8 +12,8 @@ Pergunta de pesquisa:
 Uso:
     python src/transform_silver.py
 
-Pre-requisito:
-    data/bronze/sihsus_sp_raw.parquet (gerado por src/ingest_bronze.py)
+Pré-requisito:
+    data/bronze/sihsus_sp_raw.parquet (gerado pelo src/ingest_bronze.py)
 
 Saída:
     data/silver/sihsus_sp.parquet
@@ -38,7 +38,7 @@ CAMPOS = [
     "MUNIC_RES",  # Município de residência (cod. IBGE 6 dígitos)
     "MUNIC_MOV",  # Município do estabelecimento
     "DIAG_PRINC", # Diagnóstico principal (CID-10)
-    "MORTE",      # Indicador de óbito (0=Nao, 1=Sim)
+    "MORTE",      # Indicador de óbito (0 = Não, 1 = Sim)
     "DIAS_PERM",  # Dias de permanência
     "UTI_MES_TO", # Dias de UTI no mês
     "CAR_INT",    # Caráter da internação (eletiva/urgência)
@@ -85,7 +85,7 @@ def _parse_datasus_date(series: pd.Series) -> pd.Series:
 
 
 def clean_dtypes(df: pd.DataFrame) -> pd.DataFrame:
-    """Tipagem: datas -> datetime, numéricos -> Int64/float, strings -> upper+strip."""
+    """Tipagem das colunas: datas para datetime, numéricos para Int64/float, strings para upper e strip."""
     df["DT_INTER"] = _parse_datasus_date(df["DT_INTER"].astype(str))
     df["DT_SAIDA"] = _parse_datasus_date(df["DT_SAIDA"].astype(str))
 
@@ -107,8 +107,8 @@ def clean_dtypes(df: pd.DataFrame) -> pd.DataFrame:
 def drop_nulls(df: pd.DataFrame) -> pd.DataFrame:
     """Remove linhas com qualquer valor nulo nos 17 campos selecionados.
 
-    Silver deve entregar dados totalmente preenchidos. Linhas com qualquer
-    campo faltante são descartadas aqui, imediatamente após a tipagem.
+    A silver é garantida sem nulos. Qualquer linha com um campo faltante
+    cai aqui, logo depois da tipagem.
     """
     before = len(df)
     nulls_por_col = df.isnull().sum().sort_values(ascending=False)
@@ -125,7 +125,7 @@ def drop_nulls(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def drop_duplicates(df: pd.DataFrame) -> pd.DataFrame:
-    """Remove linhas exatamente duplicadas (todas as 17 colunas iguais)."""
+    """Remove linhas duplicadas em todas as 17 colunas."""
     before = len(df)
     df = df.drop_duplicates().copy()
     log.info(
@@ -164,12 +164,12 @@ def add_time_columns(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def add_age_group(df: pd.DataFrame) -> pd.DataFrame:
-    """Converte IDADE + COD_IDADE para idade em anos e bucketiza em faixa etária.
+    """Converte IDADE e COD_IDADE em idade em anos e bucketiza por faixa etária.
 
     COD_IDADE no SIH/SUS:
-        '2' = dias, '3' = meses, '4' = anos, '5' = anos (100+).
-    Dias e meses são convertidos para 0 anos (cai na faixa 0-4).
-    '5' soma 100 à idade informada.
+        '2' = dias, '3' = meses, '4' = anos, '5' = anos a partir de 100.
+    Dias e meses viram 0 anos (cai na faixa 0-4).
+    O código '5' soma 100 à idade informada.
     """
     idade_anos = pd.Series(0, index=df.index, dtype="Int64")
     idade_anos = idade_anos.mask(df["COD_IDADE"] == "4", df["IDADE"])
@@ -190,11 +190,11 @@ NORMALIZE_COLS = ["DIAS_PERM", "UTI_MES_TO", "IDADE", "VAL_TOT"]
 
 
 def normalize_min_max(df: pd.DataFrame) -> pd.DataFrame:
-    """Adiciona colunas `*_norm` com normalização Min-Max [0, 1].
+    """Adiciona colunas `*_norm` com normalização Min-Max em [0, 1].
 
-    As colunas originais são preservadas. Normalização é útil para
-    comparar variáveis em escalas diferentes (ex.: VAL_TOT em reais
-    vs. DIAS_PERM em dias).
+    As colunas originais ficam preservadas. A normalização ajuda a
+    comparar variáveis em escalas diferentes, por exemplo VAL_TOT em
+    reais frente a DIAS_PERM em dias.
     """
     for col in NORMALIZE_COLS:
         s = df[col].astype("float64")
@@ -211,11 +211,11 @@ def normalize_min_max(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def audit_quality(df: pd.DataFrame) -> None:
-    """Auditoria de qualidade: asserções invariantes + resumo estatístico.
+    """Auditoria de qualidade: asserções de invariante e resumo estatístico.
 
-    Executa asserções que devem valer em qualquer silver saudável e
-    loga um relatório de qualidade. Interrompe o pipeline se alguma
-    invariante for violada.
+    Roda as asserções que devem valer em qualquer silver saudável e
+    loga um relatório de qualidade. Se alguma invariante falha, o
+    pipeline para e nada é gravado.
     """
     log.info("=== AUDITORIA DE QUALIDADE DA SILVER ===")
 
@@ -252,14 +252,14 @@ def audit_quality(df: pd.DataFrame) -> None:
         norm = df[f"{col}_norm"]
         assert norm.min() >= 0 and norm.max() <= 1, f"{col}_norm fora de [0,1]"
 
-    log.info("Auditoria OK — silver aprovada.")
+    log.info("Auditoria OK: silver aprovada.")
 
 
 def transform_silver(
     bronze_path: Path = BRONZE_FILE,
     output: Path = SILVER_FILE,
 ) -> pd.DataFrame:
-    """Executa o pipeline completo Bronze -> Silver."""
+    """Executa o pipeline bronze para silver do início ao fim."""
     output.parent.mkdir(parents=True, exist_ok=True)
 
     df = load_bronze(bronze_path)
