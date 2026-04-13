@@ -23,8 +23,8 @@ import pyarrow.parquet as pq
 from datasus_dbc import decompress
 from dbfread import DBF
 
-BRONZE_SOURCE_DIR = Path("data/bronze/sihsus/SP")
-BRONZE_OUTPUT = Path("data/bronze/sihsus_sp_raw.parquet")
+BRONZE_SOURCE_DIR = Path("../data/bronze/sihsus/SP")
+BRONZE_OUTPUT = Path("../data/bronze/sihsus_sp_raw.parquet")
 
 logging.basicConfig(
     level=logging.INFO,

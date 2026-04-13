@@ -26,8 +26,8 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-BRONZE_FILE = Path("data/bronze/sihsus_sp_raw.parquet")
-SILVER_FILE = Path("data/silver/sihsus_sp.parquet")
+BRONZE_FILE = Path("../data/bronze/sihsus_sp_raw.parquet")
+SILVER_FILE = Path("../data/silver/sihsus_sp.parquet")
 
 # Campos selecionados do schema SIH/SUS (de 113 originais)
 CAMPOS = [
