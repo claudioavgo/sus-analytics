@@ -1,0 +1,15 @@
+sexo,faixa_etaria,internacoes,obitos,taxa_obito
+Feminino,0-4,2625,47,1.79
+Feminino,15-29,8440,617,7.31
+Feminino,30-44,27324,3186,11.66
+Feminino,45-59,51366,9036,17.59
+Feminino,5-14,1057,36,3.41
+Feminino,60-74,57664,14959,25.94
+Feminino,75+,37024,13354,36.07
+Masculino,0-4,3296,45,1.37
+Masculino,15-29,8537,706,8.27
+Masculino,30-44,40332,4802,11.91
+Masculino,45-59,68336,12968,18.98
+Masculino,5-14,1220,31,2.54
+Masculino,60-74,67730,20217,29.85
+Masculino,75+,36321,14567,40.11

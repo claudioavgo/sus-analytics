@@ -6,7 +6,7 @@ a pesquisa, aplica tipagem e filtros de qualidade, adiciona colunas derivadas
 linha a linha (sem agregação) e salva o Parquet da silver.
 
 Pergunta de pesquisa:
-    "Como as ondas do COVID-19 impactaram o volume de internações
+    "Como as ondas da COVID-19 impactaram o volume de internações
     e a mortalidade hospitalar no SUS-SP entre 2020 e 2023?"
 
 Uso:

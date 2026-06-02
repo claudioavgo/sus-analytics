@@ -24,3 +24,16 @@
 | Documentação de arquitetura            | Cláudio Alves                    | Concluído |
 | Dicionário de dados                    | Cláudio Alves                    | Concluído |
 | README e checklist da AV1              | Cláudio Alves                    | Concluído |
+
+### AV2 (08/06)
+
+| Tarefa                                          | Responsável                      | Status    |
+| ----------------------------------------------- | -------------------------------- | --------- |
+| Camada gold (`src/build_gold.py`)               | Bruno Ribeiro e Vinícius Ventura | Concluído |
+| Estatísticas de evidência (`src/pipeline_stats.py`) | Bruno Ribeiro                | Concluído |
+| Dashboard interativo (`src/build_dashboard.py`) | Vinícius Ventura                 | Concluído |
+| Notebook de análise da gold (03)                | Vinícius Ventura                 | Concluído |
+| Notebook de evidências do pipeline (00)         | Bruno Ribeiro                    | Concluído |
+| README como relatório e checklist da AV2        | Cláudio Alves                    | Concluído |
+| Atualização da documentação de arquitetura      | Cláudio Alves                    | Concluído |
+| Preparação da apresentação final                | Cláudio Alves                    | Em andamento |

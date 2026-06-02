@@ -1,6 +1,10 @@
+# Dados brutos pesados do DATASUS: não versionados (baixados do FTP, ver README)
+data/bronze/**/*.dbc
+# Parquets pesados de bronze e silver: regenerados pelo pipeline, não versionados
 data/bronze/*.parquet
 data/silver/*.parquet
-data/gold/
+# A camada gold (tabelas agregadas) é pequena e é resultado da análise: versionada
+# (CSV e Parquet ficam no repo para servirem de evidência das tabelas geradas)
 
 # Cache Python
 __pycache__/

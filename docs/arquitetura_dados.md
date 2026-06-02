@@ -2,13 +2,13 @@
 
 ## Visão geral
 
-O projeto segue a arquitetura medalhão, com camadas bronze, silver e gold. Cada camada tem um papel claro: a bronze guarda o dado bruto como veio da fonte, a silver entrega o dado limpo e tipado, e a gold (prevista para a AV2) reúne as tabelas já agregadas que respondem à pergunta de pesquisa.
+O projeto segue a arquitetura medalhão, com camadas bronze, silver e gold. Cada camada tem um papel claro: a bronze guarda o dado bruto como veio da fonte, a silver entrega o dado limpo e tipado, e a gold reúne as tabelas já agregadas que respondem à pergunta de pesquisa. O destino final do pipeline são as visualizações: um dashboard interativo e os notebooks de análise.
 
 **Recorte:** estado de São Paulo, de janeiro de 2020 a dezembro de 2023.
 **Fonte única:** SIH/SUS, AIH Reduzida, publicada pelo DATASUS.
 
 ```text
-[DATASUS, FTP publico]
+[DATASUS, FTP público]
          |
          v
   [Bronze]                                      <- implementado
@@ -25,12 +25,20 @@ O projeto segue a arquitetura medalhão, com camadas bronze, silver e gold. Cada
          |
          | src/transform_silver.py
          v
-  [Visualizacoes exploratorias]                 <- implementado (AV1)
+  [Visualizações exploratórias]                 <- implementado (AV1)
   notebooks/02_silver_visualizacoes.ipynb
          |
+         | src/build_gold.py
          v
-  [Gold]                                        <- previsto para a AV2
-  Tabelas agregadas (series temporais, mortalidade por onda etc.)
+  [Gold]                                        <- implementado (AV2)
+  data/gold/*.parquet e *.csv
+  5 tabelas agregadas: serie_mensal, ondas,
+  perfil_covid_vs_outros, demografia_covid, municipios_covid
+         |
+         | src/build_dashboard.py / notebooks/03_gold_analise.ipynb
+         v
+  [Destino: consumo]                            <- implementado (AV2)
+  output/dashboard.html (interativo) + output/figuras/*.png
 ```
 
 ## Camada Bronze (implementada)
@@ -113,24 +121,56 @@ As transformações são aplicadas nesta ordem:
 | `IDADE_norm`      | `IDADE`               | Min-Max normalizado em `[0, 1]`      |
 | `VAL_TOT_norm`    | `VAL_TOT`             | Min-Max normalizado em `[0, 1]`      |
 
-> **Nota sobre agregações:** a silver **não** contém tabelas agregadas. Todas as colunas derivadas são calculadas linha a linha. Séries mensais, mortalidade por onda e afins são escopo da gold, na AV2.
+> **Nota sobre agregações:** a silver **não** contém tabelas agregadas. Todas as colunas derivadas são calculadas linha a linha. Séries mensais, mortalidade por onda e afins ficam na gold (ver seção da camada gold).
 
-## Visualizações (AV1)
+## Visualizações exploratórias (AV1)
 
-As visualizações exploratórias das variáveis da silver estão em `notebooks/02_silver_visualizacoes.ipynb`. Elas são calculadas em memória sobre a silver granular. Nada é persistido em disco.
+As visualizações exploratórias das variáveis da silver estão em `notebooks/02_silver_visualizacoes.ipynb`. Elas são calculadas em memória sobre a silver granular. Nada é persistido em disco. As visualizações de resultado, consolidadas, estão na camada de destino descrita acima (dashboard e notebook 03).
 
-## Camada Gold (prevista para a AV2)
+## Camada Gold (implementada)
 
-Escopo da AV2: tabelas agregadas prontas para responder à pergunta de pesquisa, como volume mensal por CID, taxa de mortalidade por onda e perfil de uso da UTI.
+A gold reúne as tabelas agregadas prontas para responder à pergunta de pesquisa. É gerada pelo `src/build_gold.py` a partir da silver e salva em `data/gold/`, em Parquet (consumo analítico) e CSV (inspeção e versionamento). Por serem pequenas, as tabelas gold ficam versionadas no repositório.
+
+### Script responsável: `src/build_gold.py`
+
+Primeiro rotula cada internação com a onda da pandemia (`add_onda`) e então materializa cinco tabelas:
+
+| Tabela | Conteúdo | Responde |
+| ------ | -------- | -------- |
+| `serie_mensal` | Internações e óbitos por mês (COVID vs outros) e taxas | Evolução mensal e mortalidade |
+| `ondas` | Volume, letalidade, UTI, permanência e idade por onda | Perfil por onda |
+| `perfil_covid_vs_outros` | Comparativo clínico COVID frente aos demais motivos | Gravidade da COVID |
+| `demografia_covid` | Internações, óbitos e letalidade por sexo e faixa etária | Grupos mais afetados |
+| `municipios_covid` | Top 20 municípios por internação COVID | Concentração geográfica |
+
+### Definição das ondas
+
+As janelas das ondas foram definidas a partir dos picos observados na própria série mensal de internações por COVID (CID B342), e não por datas arbitrárias:
+
+| Onda | Janela | Pico |
+| ---- | ------ | ---- |
+| Onda 1 (vírus original) | Jan/2020 a Out/2020 | Jul/2020 |
+| Onda 2 (variante Gama) | Nov/2020 a Out/2021 | Mar/2021 (45.180) |
+| Onda 3 (variante Ômicron) | Nov/2021 a Abr/2022 | Jan/2022 |
+| Período endêmico | Mai/2022 a Dez/2023 | sem pico relevante |
+
+## Camada de destino: visualizações (implementada)
+
+O destino final do pipeline são as visualizações de resultado.
+
+- **`src/build_dashboard.py`** lê a gold e monta `output/dashboard.html`, um dashboard único, interativo e auto-contido (Plotly embutido, funciona offline). O mesmo script exporta as figuras estáticas em `output/figuras/*.png`, usadas no README. As funções de figura ficam nesse módulo e são reaproveitadas pelo notebook, garantindo uma única fonte de verdade visual.
+- **`notebooks/03_gold_analise.ipynb`** consome a gold, responde às sub-perguntas com leitura crítica e dispara a geração do dashboard.
+- **`notebooks/00_pipeline_evidencias.ipynb`** evidencia, com saídas visuais, as camadas bronze e silver (volume de chegada dos dados, funil de limpeza e tabelas geradas). As estatísticas vêm do `src/pipeline_stats.py`.
 
 ## Tecnologias
 
 | Camada        | Tecnologia                       | Por que foi escolhida                                          |
 | ------------- | -------------------------------- | -------------------------------------------------------------- |
 | Ingestão      | `datasus-dbc`, `dbfread`         | São as bibliotecas que leem `.dbc` sem precisar converter fora |
-| Processamento | `pandas`                         | Atende com folga o volume atual e o time já domina             |
+| Processamento | `pandas`, `numpy`                | Atende com folga o volume atual e o time já domina             |
 | Armazenamento | Parquet via `pyarrow`            | Formato colunar e comprimido, bom para consultas analíticas    |
 | Análise       | Jupyter, `matplotlib`, `seaborn` | Ferramentas usuais para exploração e gráficos estáticos        |
+| Visualização interativa | `plotly`, `kaleido`    | Dashboard interativo (HTML auto-contido) e export de PNG       |
 
 ### Tecnologias pagas que poderiam entrar em uma versão profissional
 
@@ -150,6 +190,6 @@ Escopo da AV2: tabelas agregadas prontas para responder à pergunta de pesquisa,
 | Nulos          | Qualquer coluna nula entre as 17 selecionadas                 | Linha descartada, garantido por `drop_nulls` e `audit_quality`   |
 | Duplicatas     | Linhas idênticas em todas as colunas                          | Removidas por `drop_duplicates`                                  |
 | Encoding       | Arquivos em latin-1                                           | Encoding declarado explicitamente na leitura                     |
-| CID do COVID   | O DATASUS usa `B342`, e não `U071` ou `U072`                  | A flag `is_covid` usa `B342`                                     |
+| CID da COVID   | O DATASUS usa `B342`, e não `U071` ou `U072`                  | A flag `is_covid` usa `B342`                                     |
 | Escalas        | Variáveis numéricas em unidades diferentes                    | Colunas `*_norm` Min-Max em `[0, 1]`                             |
 | Invariantes    | Nulos, duplicatas, período e intervalos de normalização       | `audit_quality` roda as asserções no fim do pipeline             |
