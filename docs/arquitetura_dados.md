@@ -162,12 +162,17 @@ O destino final do pipeline são as visualizações de resultado.
 - **`notebooks/03_gold_analise.ipynb`** consome a gold, responde às sub-perguntas com leitura crítica e dispara a geração do dashboard.
 - **`notebooks/00_pipeline_evidencias.ipynb`** evidencia, com saídas visuais, as camadas bronze e silver (volume de chegada dos dados, funil de limpeza e tabelas geradas). As estatísticas vêm do `src/pipeline_stats.py`.
 
+## Modelo probabilístico (aprofundamento da análise)
+
+Além da análise descritiva, o `src/build_model.py` ajusta uma **regressão logística** (`scikit-learn`) que estima a probabilidade de óbito hospitalar a partir de cinco fatores da silver: idade, sexo, COVID, uso de UTI e dias de permanência. O modelo reporta os *odds ratios* de cada fator (quanto cada um multiplica a chance de óbito) e a curva ROC com a AUC. Os resultados são salvos em `data/gold/` (`modelo_coeficientes.csv`, `modelo_metricas.csv`, `modelo_roc.csv`) e as figuras em `output/figuras/` (07 e 08); a leitura crítica está em `notebooks/04_modelo_obito.ipynb`. O objetivo é quantificar e ordenar os fatores de risco, não fazer previsão clínica individual.
+
 ## Tecnologias
 
 | Camada        | Tecnologia                       | Por que foi escolhida                                          |
 | ------------- | -------------------------------- | -------------------------------------------------------------- |
 | Ingestão      | `datasus-dbc`, `dbfread`         | São as bibliotecas que leem `.dbc` sem precisar converter fora |
 | Processamento | `pandas`, `numpy`                | Atende com folga o volume atual e o time já domina             |
+| Modelagem     | `scikit-learn`                   | Regressão logística para risco de óbito (odds ratios e AUC)     |
 | Armazenamento | Parquet via `pyarrow`            | Formato colunar e comprimido, bom para consultas analíticas    |
 | Análise       | Jupyter, `matplotlib`, `seaborn` | Ferramentas usuais para exploração e gráficos estáticos        |
 | Visualização interativa | `plotly`, `kaleido`    | Dashboard interativo (HTML auto-contido) e export de PNG       |

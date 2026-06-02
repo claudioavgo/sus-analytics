@@ -40,6 +40,8 @@ Destino:       (x) Finalizado   output/dashboard.html + notebooks de análise
 - [x] Perfil clínico COVID vs demais motivos.
 - [x] Recorte demográfico (sexo e faixa etária) com taxa de óbito.
 - [x] Concentração geográfica por município.
+- [x] Modelo probabilístico (regressão logística) de risco de óbito, com odds ratios e
+      curva ROC (`src/build_model.py` e `notebooks/04_modelo_obito.ipynb`).
 
 ## Resposta ao feedback da AV1
 

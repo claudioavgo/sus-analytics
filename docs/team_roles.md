@@ -33,6 +33,7 @@
 | Estatísticas de evidência (`src/pipeline_stats.py`) | Bruno Ribeiro                | Concluído |
 | Dashboard interativo (`src/build_dashboard.py`) | Vinícius Ventura                 | Concluído |
 | Notebook de análise da gold (03)                | Vinícius Ventura                 | Concluído |
+| Modelo probabilístico de óbito (`src/build_model.py` + notebook 04) | Bruno Ribeiro e Vinícius Ventura | Concluído |
 | Notebook de evidências do pipeline (00)         | Bruno Ribeiro                    | Concluído |
 | README como relatório e checklist da AV2        | Cláudio Alves                    | Concluído |
 | Atualização da documentação de arquitetura      | Cláudio Alves                    | Concluído |
