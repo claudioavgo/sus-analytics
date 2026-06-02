@@ -277,6 +277,15 @@ requirements.txt
 
 ## 8. Como reproduzir
 
+> **Dados brutos (`.dbc`).** Os 48 arquivos `.dbc` do SIH/SUS são dados grandes (~730 MB)
+> e, por isso, **não ficam versionados** no repositório. Baixe-os do DATASUS antes de rodar
+> a ingestão e coloque-os em `data/bronze/sihsus/SP/`. São os arquivos `RDSP2001.dbc` a
+> `RDSP2312.dbc` (padrão `RDSP<AA><MM>.dbc`, AIH Reduzida de São Paulo, Jan/2020 a Dez/2023),
+> disponíveis na área de dissemínação do SIHSUS no FTP público do DATASUS
+> (`ftp.datasus.gov.br`, diretório `dissemin/publicos/SIHSUS/200801_/Dados/`) ou via a
+> biblioteca [`pysus`](https://github.com/AlertaDengue/PySUS). A camada gold já vem
+> versionada em `data/gold/`, então os passos 4 a 7 abaixo rodam mesmo sem os `.dbc`.
+
 ```bash
 # 1. Instalar as dependências
 pip install -r requirements.txt

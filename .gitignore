@@ -1,3 +1,5 @@
+# Dados brutos pesados do DATASUS: não versionados (baixados do FTP, ver README)
+data/bronze/**/*.dbc
 # Parquets pesados de bronze e silver: regenerados pelo pipeline, não versionados
 data/bronze/*.parquet
 data/silver/*.parquet
