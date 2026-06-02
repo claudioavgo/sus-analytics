@@ -52,5 +52,6 @@ Destino:       (x) Finalizado   output/dashboard.html + notebooks de análise
 ## Preparação da apresentação final (até 20 min)
 
 - [x] Dashboard interativo pronto para a demonstração ao vivo (abre offline no navegador).
-- [ ] Roteiro da apresentação focado em resultados e na demonstração do pipeline em ação.
-- [ ] Ensaiar a apresentação dentro do tempo.
+- [x] Roteiro da apresentação com divisão de falas, fluxo da demo e plano B: `docs/roteiro_apresentacao.md`.
+- [ ] Ensaiar a apresentação dentro do tempo (pelo menos 2 ensaios cronometrados).
+- [ ] Confirmar que o `dashboard.html` abre offline no equipamento da sala (levar em pendrive).

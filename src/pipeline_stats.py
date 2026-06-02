@@ -103,9 +103,13 @@ def build_pipeline_stats(bronze_path: Path = BRONZE_FILE, gold_dir: Path = GOLD_
     volume = build_volume_mensal(df_bronze)
     funnel = build_funnel(df_bronze)
 
-    volume.to_csv(VOLUME_CSV, index=False, encoding="utf-8")
-    funnel.to_csv(FUNNEL_CSV, index=False, encoding="utf-8")
-    log.info("Salvos: %s e %s", FUNNEL_CSV.name, VOLUME_CSV.name)
+    # Caminhos derivados do parâmetro gold_dir (e não das constantes de módulo),
+    # para que a saída respeite o diretório solicitado pelo chamador.
+    funnel_csv = gold_dir / "pipeline_funnel.csv"
+    volume_csv = gold_dir / "pipeline_volume_mensal.csv"
+    volume.to_csv(volume_csv, index=False, encoding="utf-8")
+    funnel.to_csv(funnel_csv, index=False, encoding="utf-8")
+    log.info("Salvos: %s e %s", funnel_csv.name, volume_csv.name)
     return {"volume_mensal": volume, "funnel": funnel}
 
 

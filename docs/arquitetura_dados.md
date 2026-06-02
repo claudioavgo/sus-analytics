@@ -8,7 +8,7 @@ O projeto segue a arquitetura medalhão, com camadas bronze, silver e gold. Cada
 **Fonte única:** SIH/SUS, AIH Reduzida, publicada pelo DATASUS.
 
 ```text
-[DATASUS, FTP publico]
+[DATASUS, FTP público]
          |
          v
   [Bronze]                                      <- implementado
@@ -25,7 +25,7 @@ O projeto segue a arquitetura medalhão, com camadas bronze, silver e gold. Cada
          |
          | src/transform_silver.py
          v
-  [Visualizacoes exploratorias]                 <- implementado (AV1)
+  [Visualizações exploratórias]                 <- implementado (AV1)
   notebooks/02_silver_visualizacoes.ipynb
          |
          | src/build_gold.py
@@ -190,6 +190,6 @@ O destino final do pipeline são as visualizações de resultado.
 | Nulos          | Qualquer coluna nula entre as 17 selecionadas                 | Linha descartada, garantido por `drop_nulls` e `audit_quality`   |
 | Duplicatas     | Linhas idênticas em todas as colunas                          | Removidas por `drop_duplicates`                                  |
 | Encoding       | Arquivos em latin-1                                           | Encoding declarado explicitamente na leitura                     |
-| CID do COVID   | O DATASUS usa `B342`, e não `U071` ou `U072`                  | A flag `is_covid` usa `B342`                                     |
+| CID da COVID   | O DATASUS usa `B342`, e não `U071` ou `U072`                  | A flag `is_covid` usa `B342`                                     |
 | Escalas        | Variáveis numéricas em unidades diferentes                    | Colunas `*_norm` Min-Max em `[0, 1]`                             |
 | Invariantes    | Nulos, duplicatas, período e intervalos de normalização       | `audit_quality` roda as asserções no fim do pipeline             |

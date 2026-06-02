@@ -39,7 +39,7 @@ insights consolidados.
 
 **Pergunta de pesquisa:**
 
-> Como as ondas do COVID-19 impactaram o volume de internações e a mortalidade
+> Como as ondas da COVID-19 impactaram o volume de internações e a mortalidade
 > hospitalar no SUS-SP entre 2020 e 2023?
 
 **Sub-perguntas:**
@@ -147,6 +147,13 @@ O destino final são as **visualizações**: um dashboard HTML interativo
 (`output/dashboard.html`, com Plotly embutido, abre offline, sem servidor) e os
 notebooks de análise. As figuras estáticas em `output/figuras/` são geradas a partir das
 mesmas funções do dashboard, garantindo uma única fonte de verdade visual.
+
+> **Evidências do pipeline (resposta ao feedback da AV1).** Na AV1, foi apontado que
+> faltavam saídas visuais nas camadas anteriores à gold. Para endereçar isso, o notebook
+> [`notebooks/00_pipeline_evidencias.ipynb`](notebooks/00_pipeline_evidencias.ipynb)
+> mostra, com gráficos, como os dados chegaram (volume de ingestão por mês), o que foi
+> transformado (funil de limpeza da bronze para a silver) e quais tabelas foram geradas
+> (camada gold).
 
 ## 5. Resultados e visualizações
 
