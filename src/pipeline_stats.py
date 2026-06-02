@@ -85,7 +85,7 @@ def build_funnel(df_bronze: pd.DataFrame) -> pd.DataFrame:
     etapas.append(("Após remover duplicatas", len(df)))
 
     df = filter_period(df)
-    etapas.append(("Silver (2020–2023)", len(df)))
+    etapas.append(("Silver (2020-2023)", len(df)))
 
     funnel = pd.DataFrame(etapas, columns=["etapa", "linhas"])
     funnel["removidas_na_etapa"] = (-funnel["linhas"].diff()).fillna(0).astype(int)

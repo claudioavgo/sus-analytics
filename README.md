@@ -1,4 +1,4 @@
-# SUS Analytics — Impacto da COVID-19 nas internações hospitalares (SP, 2020–2023)
+# SUS Analytics: Impacto da COVID-19 nas internações hospitalares (SP, 2020-2023)
 
 > Projeto final da disciplina **Fundamentos de Big Data**.
 > Pipeline de Big Data completo sobre dados públicos do SIH/SUS (DATASUS),
@@ -54,7 +54,7 @@ insights consolidados.
 Entender o comportamento das internações por COVID em uma base real tem valor prático:
 ajuda a dimensionar a pressão sobre leitos e UTIs, a identificar os grupos mais
 vulneráveis e a avaliar como a gravidade mudou ao longo das ondas. O SIH/SUS é uma fonte
-pública, volumosa e padronizada — ideal para exercitar um pipeline de Big Data ponta a
+pública, volumosa e padronizada, ideal para exercitar um pipeline de Big Data ponta a
 ponta, com os desafios reais de ingestão de formato proprietário (`.dbc`), limpeza,
 tipagem e agregação de milhões de registros.
 
@@ -65,8 +65,8 @@ inflar o pipeline com dados que não responderiam à pergunta.
 ## 3. Objetivo do projeto
 
 Desenvolver uma solução baseada em dados que **responda à pergunta de pesquisa**,
-implementando e documentando todas as etapas de um pipeline de Big Data — fontes,
-ingestão, armazenamento, transformação, carregamento e destino — e entregando os
+implementando e documentando todas as etapas de um pipeline de Big Data, fontes,
+ingestão, armazenamento, transformação, carregamento e destino, e entregando os
 resultados em visualizações e em um **dashboard interativo**.
 
 ## 4. Metodologia: o pipeline de dados
@@ -103,7 +103,7 @@ papel claro. O diagrama abaixo resume o fluxo:
 O SIH/SUS é um dado **estruturado**, distribuído em arquivos `.dbc` (um DBF comprimido,
 formato proprietário do DATASUS), um por mês de competência.
 
-### 4.2 Ingestão (camada bronze) — `src/ingest_bronze.py`
+### 4.2 Ingestão (camada bronze): `src/ingest_bronze.py`
 
 Lê os 48 arquivos `.dbc`, descomprime cada um (`datasus-dbc` + `dbfread`) e consolida
 tudo em um único Parquet bruto, **preservando os 113 campos originais**. Nenhuma seleção,
@@ -115,17 +115,17 @@ Todas as camadas são persistidas em **Parquet** (colunar e comprimido, via `pya
 formato adequado para consultas analíticas sobre milhões de linhas. A camada gold também
 é exportada em **CSV**, por ser pequena e fácil de inspecionar.
 
-### 4.4 Transformação (camada silver) — `src/transform_silver.py`
+### 4.4 Transformação (camada silver): `src/transform_silver.py`
 
 Aplica, em ordem: **seleção** de 17 campos relevantes (de 113); **tipagem** (datas →
 `datetime`, numéricos → `Int64`/`float`, strings normalizadas); **remoção de nulos** e
-**de duplicatas**; **filtro de período** (2020–2023); **enriquecimento linha a linha**
+**de duplicatas**; **filtro de período** (2020-2023); **enriquecimento linha a linha**
 (`is_covid`, `ano`, `mes`, `ano_mes`, `faixa_etaria`); e **normalização Min-Max** das
 variáveis numéricas. Ao final, uma rotina de **auditoria** roda asserções de invariante
-(sem nulos, sem duplicatas, período válido, normalização em `[0, 1]`) — se alguma falha,
+(sem nulos, sem duplicatas, período válido, normalização em `[0, 1]`), se alguma falha,
 o pipeline para e nada é gravado.
 
-### 4.5 Carregamento e agregação (camada gold) — `src/build_gold.py`
+### 4.5 Carregamento e agregação (camada gold): `src/build_gold.py`
 
 Materializa **cinco tabelas agregadas**, cada uma voltada a uma parte da pergunta:
 
@@ -141,10 +141,10 @@ As **janelas das ondas** não são arbitrárias: foram definidas a partir dos pi
 própria série mensal de internações por COVID (Onda 1/original, Onda 2/Gama,
 Onda 3/Ômicron e período endêmico).
 
-### 4.6 Destino e consumo — `src/build_dashboard.py` e notebooks
+### 4.6 Destino e consumo: `src/build_dashboard.py` e notebooks
 
 O destino final são as **visualizações**: um dashboard HTML interativo
-(`output/dashboard.html`, com Plotly embutido — abre offline, sem servidor) e os
+(`output/dashboard.html`, com Plotly embutido, abre offline, sem servidor) e os
 notebooks de análise. As figuras estáticas em `output/figuras/` são geradas a partir das
 mesmas funções do dashboard, garantindo uma única fonte de verdade visual.
 
@@ -159,11 +159,11 @@ crítica de cada gráfico, está em
 
 | Métrica | Valor |
 | ------- | ----- |
-| Internações totais (SP, 2020–2023) | ~9,60 milhões |
+| Internações totais (SP, 2020-2023) | ~9,60 milhões |
 | Internações por COVID (CID B342) | **411.272** |
 | Óbitos por COVID | **94.571** |
-| Letalidade hospitalar — COVID | **23,0%** |
-| Letalidade hospitalar — outros motivos | **5,5%** |
+| Letalidade hospitalar (COVID) | **23,0%** |
+| Letalidade hospitalar (outros motivos) | **5,5%** |
 | Mês de pico (variante Gama) | **março de 2021** (45.180 internações) |
 
 ### 5.1 Evolução mensal das internações
@@ -180,7 +180,7 @@ eletivos na fase mais aguda.
 ![Taxa de óbito hospitalar mensal](output/figuras/02_serie_mortalidade.png)
 
 A letalidade hospitalar da COVID fica **muito acima** da dos demais motivos em quase todos
-os meses — **23,0% contra 5,5%** no período, cerca de **4,2×** — e a distância se abre nos
+os meses, **23,0% contra 5,5%** no período, cerca de **4,2×**, e a distância se abre nos
 picos das ondas.
 
 ### 5.3 Perfil das internações por onda
@@ -222,7 +222,7 @@ com a concentração da rede de alta complexidade do SUS.
 - A doença foi **muito mais letal** no hospital que a média das demais internações
   (**23,0% vs 5,5%**) e exigiu **três vezes mais UTI**.
 - A **gravidade aumentou da Onda 1 à Ômicron** e só recuou no **período endêmico**, quando
-  letalidade e uso de UTI caíram pela metade — efeito coerente com vacinação e mudança no
+  letalidade e uso de UTI caíram pela metade, efeito coerente com vacinação e mudança no
   perfil dos casos.
 - O desfecho foi fortemente **etário e por sexo**: idosos, em especial **homens com 75+**,
   tiveram a maior letalidade.

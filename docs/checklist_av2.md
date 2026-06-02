@@ -13,7 +13,7 @@ Carregamento:  (x) Finalizado   src/build_gold.py  -> gold (5 tabelas)
 Destino:       (x) Finalizado   output/dashboard.html + notebooks de análise
 ```
 
-## Entrega principal — repositório GitHub como relatório
+## Entrega principal: repositório GitHub como relatório
 
 - [x] **README.md** estruturado como relatório: Introdução, Motivação, Objetivo,
       Metodologia (pipeline completo), Resultados e Visualizações, Conclusões.
@@ -30,7 +30,7 @@ Destino:       (x) Finalizado   output/dashboard.html + notebooks de análise
 - [x] Análise com leitura crítica respondendo às 4 sub-perguntas:
       `notebooks/03_gold_analise.ipynb`.
 - [x] **Evidências visuais das camadas bronze e silver** (atende ao feedback da AV1):
-      `notebooks/00_pipeline_evidencias.ipynb` — como os dados chegaram, o que foi
+      `notebooks/00_pipeline_evidencias.ipynb`, como os dados chegaram, o que foi
       transformado (funil de limpeza) e quais tabelas foram geradas.
 
 ## Profundidade da análise

@@ -110,7 +110,7 @@ def fig_serie_volume(serie: pd.DataFrame) -> go.Figure:
     fig.update_xaxes(title_text="Mês")
     return _layout(
         fig,
-        "Internações mensais no SUS-SP, 2020–2023",
+        "Internações mensais no SUS-SP, 2020-2023",
         "Os picos da curva vermelha marcam as ondas: Gama (mar/2021) e Ômicron (jan/2022)",
     )
 
@@ -301,7 +301,7 @@ def build_html(tabelas: dict, output: Path = OUTPUT_HTML) -> Path:
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SUS Analytics — Impacto da COVID-19 nas internações (SP, 2020–2023)</title>
+<title>SUS Analytics: Impacto da COVID-19 nas internações (SP, 2020-2023)</title>
 <style>
   body {{ font-family: Arial, Helvetica, sans-serif; margin: 0; background: #f4f6f8; color: #2c3e50; }}
   header {{ background: #1a2942; color: #fff; padding: 28px 40px; }}
@@ -319,7 +319,7 @@ def build_html(tabelas: dict, output: Path = OUTPUT_HTML) -> Path:
 </head>
 <body>
 <header>
-  <h1>SUS Analytics — Impacto da COVID-19 nas internações hospitalares</h1>
+  <h1>SUS Analytics: Impacto da COVID-19 nas internações hospitalares</h1>
   <p>São Paulo · 2020 a 2023 · Fonte: SIH/SUS (DATASUS) · Camada gold do pipeline de Big Data</p>
 </header>
 <div class="kpis">{kpi_html}</div>
