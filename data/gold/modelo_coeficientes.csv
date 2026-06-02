@@ -1,0 +1,6 @@
+variavel,rotulo,coeficiente,odds_ratio,aumenta_risco
+usou_uti,Uso de UTI (vs sem UTI),1.64,5.153,True
+covid,Internação por COVID (vs outros),0.961,2.615,True
+idade_decadas,Idade (por década de vida),0.472,1.603,True
+sexo_masculino,Sexo masculino (vs feminino),0.185,1.204,True
+dias_perm,Permanência (por dia internado),0.016,1.016,True

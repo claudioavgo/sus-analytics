@@ -222,6 +222,28 @@ masculina supera a feminina.
 As internações se concentram fortemente na **capital (São Paulo, IBGE 355030)**, coerente
 com a concentração da rede de alta complexidade do SUS.
 
+### 5.7 Modelo probabilístico: fatores de risco de óbito
+
+Para aprofundar a análise de mortalidade, ajustamos uma **regressão logística** que estima
+a probabilidade de óbito hospitalar a partir de cinco fatores (idade, sexo, COVID, uso de
+UTI e dias de permanência). O modelo mede **quanto cada fator pesa** no risco, por meio do
+*odds ratio* (razão de chances). Detalhes em
+[`notebooks/04_modelo_obito.ipynb`](notebooks/04_modelo_obito.ipynb).
+
+![Fatores associados ao óbito](output/figuras/07_modelo_odds.png)
+
+Todos os fatores aumentam a chance de óbito, com pesos distintos: **uso de UTI** (odds
+ratio ≈ 5,2) e **COVID** (≈ 2,6) são os mais fortes, seguidos por **idade** (≈ 1,6 por
+década) e **sexo masculino** (≈ 1,2). O efeito próprio da COVID (≈ 2,6), mesmo controlando
+por idade e UTI, mostra que o excesso de mortalidade não se explica só pela idade dos
+pacientes ou pela necessidade de UTI.
+
+![Curva ROC do modelo](output/figuras/08_modelo_roc.png)
+
+O modelo atinge **AUC ≈ 0,85** (acurácia ≈ 0,94) no conjunto de teste, uma boa capacidade
+de separar óbitos de altas com apenas cinco fatores interpretáveis. A regressão logística
+captura associações, não causalidade.
+
 ## 6. Conclusões
 
 - O impacto da COVID nas internações do SUS-SP foi **concentrado em ondas**, com pico
@@ -259,12 +281,14 @@ src/
   transform_silver.py      # Transformação: bronze -> silver
   build_gold.py            # Agregação: silver -> gold
   build_dashboard.py       # Destino: gold -> dashboard.html + figuras PNG
+  build_model.py           # Modelo: regressão logística de risco de óbito
   pipeline_stats.py        # Estatísticas de evidência do pipeline (bronze/silver)
 notebooks/
   00_pipeline_evidencias.ipynb  # Evidências visuais de bronze e silver
   01_exploracao_sihsus.ipynb    # Demonstração técnica do pipeline (AV1)
   02_silver_visualizacoes.ipynb # Visualizações exploratórias da silver (AV1)
   03_gold_analise.ipynb         # Análise da gold e geração do dashboard (AV2)
+  04_modelo_obito.ipynb         # Modelo probabilístico de risco de óbito (AV2)
 output/
   dashboard.html           # Dashboard interativo (entrega principal de resultados)
   figuras/                 # PNGs das visualizações (usados neste relatório)
@@ -302,11 +326,15 @@ python src/build_gold.py
 # 5. Dashboard e figuras: gold -> output/
 python src/build_dashboard.py
 
-# 6. (Opcional) Estatísticas de evidência do pipeline
+# 6. Modelo probabilístico de óbito: gold -> figuras + tabelas
+python src/build_model.py
+
+# 7. (Opcional) Estatísticas de evidência do pipeline
 python src/pipeline_stats.py
 
-# 7. Notebooks de análise
+# 8. Notebooks de análise
 jupyter notebook notebooks/03_gold_analise.ipynb
+jupyter notebook notebooks/04_modelo_obito.ipynb
 ```
 
 > Os scripts assumem execução a partir da pasta `src/` (caminhos relativos `../data`).
@@ -323,6 +351,7 @@ jupyter notebook notebooks/03_gold_analise.ipynb
 | Agregação | `pandas` | Tabelas gold pequenas e prontas para consumo |
 | Visualização estática | `matplotlib`, `seaborn` | Gráficos de evidência do pipeline |
 | Visualização interativa | `plotly`, `kaleido` | Dashboard interativo e export de PNG |
+| Modelagem | `scikit-learn` | Regressão logística para risco de óbito (odds ratios e AUC) |
 | Notebooks | Jupyter | Análise reproduzível e demonstração |
 | Versionamento | Git e GitHub | Histórico e colaboração |
 

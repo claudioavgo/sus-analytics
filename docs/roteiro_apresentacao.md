@@ -65,6 +65,12 @@ ponte):
 
 Mostrar a interatividade: hover, zoom e ligar/desligar séries.
 
+**Aprofundamento (modelo probabilístico).** Fechar com o `notebook 04`: a regressão
+logística de risco de óbito. Mostrar o gráfico de odds ratios (UTI ~5,2x, COVID ~2,6x,
+idade ~1,6x por década) e a AUC ~0,85. Mensagem: o modelo confirma e quantifica os achados
+descritivos, e mostra que a COVID tem efeito próprio no óbito mesmo controlando por idade
+e UTI.
+
 ### 5. Conclusões e limitações (2 min), Cláudio
 
 - Síntese dos achados principais.
